@@ -102,7 +102,7 @@ def calculate_normalized_difference(arr1: np.ndarray, arr2: np.ndarray) -> np.nd
     return norm_diff
 
 
-def worldcover_to_class_indices(worldcover: np.array) -> np.array:
+def convert_worldcover_to_class_indices(worldcover: np.array) -> np.array:
     """
     Converts worldcover classses to class indices.
     This function maps the worldcover classes 
@@ -225,7 +225,7 @@ def min_max_transform(
         if not worldcover_to_class_indices:
             sample.loc[worldcover_bands] = sample.loc[worldcover_bands] / 100
         else:
-            sample.loc[worldcover_bands] = worldcover_to_class_indices(sample.loc[worldcover_bands])
+            sample.loc[worldcover_bands] = convert_worldcover_to_class_indices(sample.loc[worldcover_bands])
 
     ### Off Nadir Angle
     angle_bands = list(filter(lambda b: "incAngle" in b, sample_bands))
