@@ -110,6 +110,8 @@ def convert_worldcover_to_class_indices(worldcover: np.array) -> np.array:
     to
         [ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10]
     """
+
+    print("worldcover", worldcover)
     worldcover[worldcover == 100.] = 110.
     worldcover[worldcover == 95.] = 100.
     worldcover /= 10
