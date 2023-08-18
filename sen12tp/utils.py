@@ -156,7 +156,10 @@ def default_clipping_transform(sample: xr.DataArray) -> xr.DataArray:
     return sample
 
 
-def min_max_transform(sample: xr.DataArray) -> xr.DataArray:
+def min_max_transform(
+        sample: xr.DataArray, 
+        exclude_worldcover: bool = False,
+) -> xr.DataArray:
     """Transforms the sample data from the clipped value range to [0, 1]"""
     sample_bands = sample.coords["band"].values
     ### Sentinel-1
@@ -204,7 +207,7 @@ def min_max_transform(sample: xr.DataArray) -> xr.DataArray:
 
     ### Worldcover
     worldcover_bands = list(filter(lambda b: "worldcover" in b, sample_bands))
-    if worldcover_bands:
+    if worldcover_bands and not exclude_worldcover:
         sample.loc[worldcover_bands] = sample.loc[worldcover_bands] / 100
 
     ### Off Nadir Angle
