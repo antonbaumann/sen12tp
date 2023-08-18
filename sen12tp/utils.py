@@ -102,6 +102,21 @@ def calculate_normalized_difference(arr1: np.ndarray, arr2: np.ndarray) -> np.nd
     return norm_diff
 
 
+def worldcover_to_class_indices(worldcover: np.array) -> np.array:
+    """
+    Converts worldcover classses to class indices.
+    This function maps the worldcover classes 
+        [10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
+    to
+        [ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10]
+    """
+    worldcover[worldcover == 100.] = 110.
+    worldcover[worldcover == 95.] = 100.
+    worldcover /= 10
+    worldcover = worldcover.astype(np.int32) - 1
+    worldcover
+
+
 def default_clipping_transform(sample: xr.DataArray) -> xr.DataArray:
     """
     Clips and cleans a data sample to default values.
@@ -155,10 +170,9 @@ def default_clipping_transform(sample: xr.DataArray) -> xr.DataArray:
         )
     return sample
 
-
 def min_max_transform(
         sample: xr.DataArray, 
-        exclude_worldcover: bool = False,
+        worldcover_to_class_indices: bool = True,
 ) -> xr.DataArray:
     """Transforms the sample data from the clipped value range to [0, 1]"""
     sample_bands = sample.coords["band"].values
@@ -207,8 +221,11 @@ def min_max_transform(
 
     ### Worldcover
     worldcover_bands = list(filter(lambda b: "worldcover" in b, sample_bands))
-    if worldcover_bands and not exclude_worldcover:
-        sample.loc[worldcover_bands] = sample.loc[worldcover_bands] / 100
+    if worldcover_bands:
+        if not worldcover_to_class_indices:
+            sample.loc[worldcover_bands] = sample.loc[worldcover_bands] / 100
+        else:
+            sample.loc[worldcover_bands] = worldcover_to_class_indices(sample.loc[worldcover_bands])
 
     ### Off Nadir Angle
     angle_bands = list(filter(lambda b: "incAngle" in b, sample_bands))
