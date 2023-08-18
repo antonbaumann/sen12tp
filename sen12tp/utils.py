@@ -113,9 +113,7 @@ def convert_worldcover_to_class_indices(worldcover_bands: xr.DataArray) -> xr.Da
     worldcover = worldcover_bands.loc["worldcover"]
     worldcover = worldcover.where(worldcover != 100., 110.)
     worldcover = worldcover.where(worldcover != 95., 100.)
-    worldcover /= 10
-    worldcover = worldcover.astype(np.int32) - 1
-    
+    worldcover = (worldcover / 10) - 1
     worldcover_bands.loc["worldcover"] = worldcover
     return worldcover_bands
 
